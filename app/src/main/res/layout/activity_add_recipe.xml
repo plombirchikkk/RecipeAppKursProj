@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="?android:attr/actionBarSize"
+    android:layout_marginTop="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/editName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/name_hint"
+            android:inputType="text"/>
+
+        <EditText
+            android:id="@+id/editIngredients"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:autofillHints=""
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:hint="@string/ingredients_hint"/>
+
+        <EditText
+            android:id="@+id/editDescription"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:autofillHints=""
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:hint="@string/description_hint"/>
+
+        <EditText
+            android:id="@+id/editInstructions"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:autofillHints=""
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:hint="@string/instructions_hint"/>
+
+        <RadioGroup
+            android:id="@+id/radioGroupType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/radioDish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/type_dish"/>
+            <RadioButton
+                android:id="@+id/radioDrink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/type_drink"/>
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/editPrepTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/prep_time_hint"
+            tools:ignore="TextFields" />
+
+        <Spinner
+            android:id="@+id/spinnerDifficulty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/save_recipe"/>
+    </LinearLayout>
+</ScrollView>

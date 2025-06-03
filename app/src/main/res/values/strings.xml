@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Менеджер рецептов</string>
+    <string name="add_recipe">Добавить рецепт</string>
+    <string name="save_recipe">Сохранить</string>
+    <string name="name_hint">Название</string>
+    <string name="ingredients_hint">Ингредиенты</string>
+    <string name="description_hint">Описание</string>
+    <string name="instructions_hint">Инструкции</string>
+    <string name="prep_time_hint">Время приготовления</string>
+    <string name="difficulty_hint">Сложность</string>
+    <string name="type_dish">Блюдо</string>
+    <string name="type_drink">Напиток</string>
+    <string name="error_empty_fields">Заполните обязательные поля</string>
+    <string name="recipe_details">Детали рецепта</string>
+    <string name="no_recipes">Нет рецептов</string>
+</resources>

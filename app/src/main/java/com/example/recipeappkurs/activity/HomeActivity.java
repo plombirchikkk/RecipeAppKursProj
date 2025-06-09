@@ -21,7 +21,6 @@ public class HomeActivity extends BaseActivity {
         // Инициализация кнопок по идентификаторам
         Button btnMealPlan = findViewById(R.id.btnMealPlan);     // Кнопка перехода к плану питания
         Button btnRecipes = findViewById(R.id.btnRecipes);       // Кнопка перехода к списку рецептов
-        Button btnAccount = findViewById(R.id.btnAccount);       // Кнопка перехода к аккаунту
 
         // Обработка нажатия на кнопку "План питания"
         btnMealPlan.setOnClickListener(v -> {
@@ -35,10 +34,5 @@ public class HomeActivity extends BaseActivity {
             startActivity(intent); // Переход к активности со списком рецептов
         });
 
-        // Обработка нажатия на кнопку "Аккаунт"
-        btnAccount.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, AccountActivity.class);
-            startActivity(intent); // Переход к активности аккаунта пользователя
-        });
     }
 }

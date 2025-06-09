@@ -31,9 +31,6 @@
         <activity
             android:name=".activity.SelectRecipeActivity"
             android:exported="false"/>
-        <activity
-            android:name=".activity.AccountActivity"
-            android:exported="false"/>
     </application>
 
 </manifest>

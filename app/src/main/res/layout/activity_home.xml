@@ -27,13 +27,4 @@
         android:gravity="center"
         android:textAlignment="center"/>
 
-    <Button
-        android:id="@+id/btnAccount"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Личный кабинет"
-        android:drawableTop="@drawable/ic_person"
-        android:gravity="center"
-        android:textAlignment="center"/>
-
 </LinearLayout>

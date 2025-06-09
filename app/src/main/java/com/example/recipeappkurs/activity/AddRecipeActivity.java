@@ -6,7 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-
+import android.widget.Toast;
 
 import com.example.recipeappkurs.R;
 import com.example.recipeappkurs.db.DBHelper;
@@ -21,6 +21,7 @@ public class AddRecipeActivity extends BaseActivity {
     private Spinner etDifficulty; // Выпадающий список для выбора сложности
     private RadioButton radioDish, radioDrink; // Радиокнопки для выбора типа рецепта
     private AddRecipe addRecipe;
+
     // Метод вызывается при создании активности
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,30 +50,85 @@ public class AddRecipeActivity extends BaseActivity {
         // Инициализация радиокнопок и кнопки сохранения
         radioDish = findViewById(R.id.radioDish);
         radioDrink = findViewById(R.id.radioDrink);
-        // Кнопка сохранения рецепта
         Button btnSave = findViewById(R.id.btnSave);
-
 
         // Обработчик нажатия на кнопку "Сохранить"
         btnSave.setOnClickListener(v -> {
-            // Получаем значения из полей ввода
-            String name = etName.getText().toString();
-            String ingredients = etIngredients.getText().toString();
-            String description = etDescription.getText().toString();
-            String instructions = etInstructions.getText().toString();
-            String type = radioDish.isChecked() ? "Dish" : "Drink"; // Определяем тип рецепта
+            // Проверка заполнения всех обязательных полей
+            boolean isValid = true;
+            String type = null;
 
-            // Если выбран напиток, получаем время приготовления и сложность
-            String prepTime = radioDrink.isChecked() ? etPrepTime.getText().toString() : null;
-            String difficulty = radioDrink.isChecked() ? (String) etDifficulty.getSelectedItem() : null;
+            // Проверка выбора типа рецепта
+            if (!radioDish.isChecked() && !radioDrink.isChecked()) {
+                Toast.makeText(this, "Пожалуйста, выберите тип: Блюдо или Напиток", Toast.LENGTH_SHORT).show();
+                isValid = false;
+            } else {
+                type = radioDish.isChecked() ? "Dish" : "Drink";
+            }
 
-            Recipe newRecipe = new Recipe(-1,type, name, ingredients, description, instructions, prepTime, difficulty);
-            // Добавляем рецепт в базу данных
-            addRecipe.execute(newRecipe);
+            // Проверка поля названия
+            String name = etName.getText().toString().trim();
+            if (name.isEmpty()) {
+                etName.setError("Название обязательно");
+                isValid = false;
+            } else {
+                etName.setError(null);
+            }
 
-            // Устанавливаем результат и закрываем активность
-            setResult(RESULT_OK);
-            finish();
+            // Проверка поля ингредиентов
+            String ingredients = etIngredients.getText().toString().trim();
+            if (ingredients.isEmpty()) {
+                etIngredients.setError("Ингредиенты обязательны");
+                isValid = false;
+            } else {
+                etIngredients.setError(null);
+            }
+
+            // Проверка поля описания
+            String description = etDescription.getText().toString().trim();
+            if (description.isEmpty()) {
+                etDescription.setError("Описание обязательно");
+                isValid = false;
+            } else {
+                etDescription.setError(null);
+            }
+
+            // Проверка поля инструкций
+            String instructions = etInstructions.getText().toString().trim();
+            if (instructions.isEmpty()) {
+                etInstructions.setError("Инструкции обязательны");
+                isValid = false;
+            } else {
+                etInstructions.setError(null);
+            }
+
+            // Проверка поля времени приготовления для напитков
+            String prepTime = null;
+            if (type != null && type.equals("Drink")) {
+                prepTime = etPrepTime.getText().toString().trim();
+                if (prepTime.isEmpty()) {
+                    etPrepTime.setError("Время приготовления обязательно для напитков");
+                    isValid = false;
+                } else {
+                    etPrepTime.setError(null);
+                }
+            }
+
+            // Получение сложности (всегда имеет значение, так как это Spinner)
+            String difficulty = (String) etDifficulty.getSelectedItem();
+
+            // Если все проверки пройдены, сохраняем рецепт
+            if (isValid) {
+                Recipe newRecipe = new Recipe(-1, type, name, ingredients, description, instructions, prepTime, difficulty);
+                try {
+                    addRecipe.execute(newRecipe);
+                    setResult(RESULT_OK);
+                    finish();
+                } catch (RuntimeException e) {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            // Если проверки не пройдены, ошибки отображаются на полях
         });
     }
 }

@@ -19,7 +19,7 @@ import java.util.Objects;
 // Класс для работы с базой данных рецептов.
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "recipes.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private static final String TABLE_RECIPES = "recipes";
     private static final String COLUMN_ID = "id";
@@ -42,7 +42,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String CREATE_RECIPES_TABLE = "CREATE TABLE " + TABLE_RECIPES + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_TYPE + " TEXT NOT NULL CHECK(" + COLUMN_TYPE + " IN ('Dish', 'Drink')),"
-                + COLUMN_NAME + " TEXT NOT NULL,"
+                + COLUMN_NAME + " TEXT NOT NULL UNIQUE,"
                 + COLUMN_INGREDIENTS + " TEXT NOT NULL,"
                 + COLUMN_DESCRIPTION + " TEXT,"
                 + COLUMN_INSTRUCTIONS + " TEXT,"
@@ -71,7 +71,26 @@ public class DBHelper extends SQLiteOpenHelper {
     // Обновление структуры базы данных.
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 3) {
+        if (oldVersion < 4) {
+            // Создать временную таблицу с UNIQUE на name
+            db.execSQL("CREATE TABLE recipes_new (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "type TEXT NOT NULL CHECK(type IN ('Dish', 'Drink'))," +
+                    "name TEXT NOT NULL UNIQUE," +
+                    "ingredients TEXT NOT NULL," +
+                    "description TEXT," +
+                    "instructions TEXT," +
+                    "prep_time TEXT," +
+                    "difficulty TEXT" +
+                    ")");
+            // Копировать данные, удаляя дубликатов
+            db.execSQL("INSERT INTO recipes_new (id, type, name, ingredients, description, instructions, prep_time, difficulty) " +
+                    "SELECT MIN(id), type, name, ingredients, description, name, prep_time, difficulty FROM " + TABLE_RECIPES + " GROUP BY name");
+            // Удалить старую таблицу
+            db.execSQL("DROP TABLE " + TABLE_RECIPES);
+            // Переименовать новую таблицу
+            db.execSQL("ALTER TABLE recipes_new RENAME TO " + TABLE_RECIPES);
+            // Обновить meal_plans
             db.execSQL("DROP TABLE IF EXISTS meal_plans");
             db.execSQL("CREATE TABLE meal_plans (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -82,6 +101,14 @@ public class DBHelper extends SQLiteOpenHelper {
                     "FOREIGN KEY(recipe_id) REFERENCES recipes(id)" +
                     ")");
         }
+    }
+
+    // Удаление дубликатов рецептов
+    public void removeDuplicateRecipes() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.d("DBHelper", "Removing duplicate recipes");
+        db.execSQL("DELETE FROM " + TABLE_RECIPES + " WHERE id NOT IN (SELECT MIN(id) FROM " + TABLE_RECIPES + " GROUP BY name)");
+        db.close();
     }
 
     // Добавление или обновление записи плана питания.
@@ -135,6 +162,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // Добавление нового рецепта.
     public void addRecipe(String type, String name, String ingredients, String description,
                           String instructions, String prepTime, String difficulty) {
+        Log.d("DBHelper", "Adding recipe: " + name);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TYPE, type);
@@ -144,6 +172,7 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(COLUMN_INSTRUCTIONS, instructions);
         values.put(COLUMN_PREP_TIME, prepTime);
         values.put(COLUMN_DIFFICULTY, difficulty);
+        db.insert(TABLE_RECIPES, null, values);
         db.close();
     }
 
@@ -183,7 +212,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, new String[]{name});
         boolean exists = cursor.moveToFirst();
         cursor.close();
-        return !exists;
+        return exists; // Возвращает true, если рецепт существует
     }
 
     // Удаление рецепта по ID.
@@ -221,5 +250,4 @@ public class DBHelper extends SQLiteOpenHelper {
         String difficulty = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DIFFICULTY));
         return new Recipe(id, type, name, ingredients, description, instructions, prepTime, difficulty);
     }
-
 }

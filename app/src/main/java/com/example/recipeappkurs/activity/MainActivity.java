@@ -30,6 +30,7 @@ public class MainActivity extends BaseActivity {
 
         // Инициализация базы данных и use case-ов
         DBHelper dbHelper = new DBHelper(this);
+        dbHelper.removeDuplicateRecipes();
         ensureDefaultRecipes = new EnsureDefaultRecipes(dbHelper);
         getAllRecipes = new GetAllRecipes(dbHelper);
         searchRecipes = new SearchRecipes(dbHelper);
